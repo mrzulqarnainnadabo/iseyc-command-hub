@@ -1,27 +1,29 @@
-# ISEYC Digital Operations Centre (deploy path)
+# ISEYC Digital Operations Centre
 
-DOC product shape on a phone-friendly stack:
+Notion + Vercel deploy path (no Supabase).
 
-- Next.js + Vercel
-- Staff key (`ISEYC_STAFF_KEY`)
-- Optional Notion
-- **No Supabase**
+## Architecture
 
-## Routes
-
-| Path | Role |
-|------|------|
-| `/` | Institutional gate |
-| `/ops` | Presidential Command Brief + sidebar |
-| `/ops/chamber` | Digital Chamber |
-| `/ops/meetings` | Meeting & Decisions |
-| `/ops/media` | Media & Content Command |
-| `/ops/staff` | Officer access |
-
-Civic Mandate / Brain open as external live products.
+```
+Staff key → /api/ops/records → Notion databases
+Public    → Civic Mandate / Civic Brain (separate apps)
+```
 
 ## Env
 
-`ISEYC_STAFF_KEY` required for staff unlock.  
-`NOTION_TOKEN` optional (reuse Mandate).  
-`NOTION_STAFF_DATABASE_ID` optional separate roster — not Mandate DB.
+| Variable | Purpose |
+|----------|---------|
+| `ISEYC_STAFF_KEY` | Unlock ops Notion data |
+| `NOTION_TOKEN` | Integration secret (reuse Mandate) |
+| `NOTION_MEETINGS_DATABASE_ID` | Meetings table |
+| `NOTION_CHAMBER_DATABASE_ID` | Chamber table |
+| `NOTION_MEDIA_DATABASE_ID` | Media table |
+| `NOTION_STAFF_DATABASE_ID` | Staff roster |
+
+Suggested Notion properties: **Name** (title), **Status**, **Notes** or **Summary**, **Date**.
+
+Share each database with the integration.
+
+## Routes
+
+- `/` gate · `/ops` Command Brief · `/ops/meetings|chamber|media|staff`
