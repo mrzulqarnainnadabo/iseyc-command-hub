@@ -19,6 +19,7 @@ export default function StaffPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [notionConfigured, setNotionConfigured] = useState(false);
   const [notionError, setNotionError] = useState<string | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
 
   async function unlock(e: FormEvent) {
     e.preventDefault();
@@ -38,6 +39,7 @@ export default function StaffPage() {
       setMembers(data.members || []);
       setNotionConfigured(Boolean(data.notionConfigured));
       setNotionError(data.error || null);
+      setHint(data.hint || null);
     } catch {
       setError("Network error. Try again.");
     } finally {
@@ -121,13 +123,14 @@ export default function StaffPage() {
               <h3 className="font-serif text-lg text-slate-950">Staff roster</h3>
               {!notionConfigured ? (
                 <p className="mt-2 text-sm text-slate-600">
-                  Notion staff database not connected yet. Set{" "}
-                  <code className="rounded bg-stone-100 px-1">NOTION_TOKEN</code> and{" "}
-                  <code className="rounded bg-stone-100 px-1">NOTION_STAFF_DATABASE_ID</code> on
-                  Vercel when ready. Hub still works without it.
+                  {hint ||
+                    "Notion staff roster not connected yet. You can reuse NOTION_TOKEN from Civic Mandate; create a separate Staff Roster database for NOTION_STAFF_DATABASE_ID. Hub works with staff key alone."}
                 </p>
               ) : notionError ? (
-                <p className="mt-2 text-sm text-amber-800">{notionError}</p>
+                <p className="mt-2 text-sm text-amber-800">
+                  {notionError}
+                  {hint ? ` ${hint}` : ""}
+                </p>
               ) : members.length === 0 ? (
                 <p className="mt-2 text-sm text-slate-600">
                   Database connected; no rows returned. Add people in Notion (Name, Role, Unit,
