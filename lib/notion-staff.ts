@@ -8,11 +8,12 @@ export type StaffMember = {
   status: string;
 };
 
-function notionConfigured(): boolean {
-  return Boolean(
-    process.env.NOTION_TOKEN?.trim() &&
-      process.env.NOTION_STAFF_DATABASE_ID?.trim()
-  );
+/**
+ * Staff roster only. Do NOT use the Civic Mandate database ID here.
+ * Reuse NOTION_TOKEN from Mandate; use a separate staff database.
+ */
+function staffDatabaseId(): string {
+  return (process.env.NOTION_STAFF_DATABASE_ID || "").replace(/-/g, "").trim();
 }
 
 function plain(prop: unknown): string {
@@ -39,21 +40,44 @@ function plain(prop: unknown): string {
   return "";
 }
 
-/**
- * Optional staff roster from a Notion database.
- * Expected properties: Name (title), Role, Unit, Status.
- */
+/** Known Civic Mandate DB id — never treat as staff roster. */
+const MANDATE_DB_BLOCKLIST = new Set([
+  "19b213d55bfc4ce8a653a05147cbbe2a",
+]);
+
 export async function listStaffMembers(): Promise<{
   configured: boolean;
   members: StaffMember[];
   error?: string;
+  hint?: string;
 }> {
-  if (!notionConfigured()) {
-    return { configured: false, members: [] };
+  if (!process.env.NOTION_TOKEN?.trim()) {
+    return {
+      configured: false,
+      members: [],
+      hint: "Optional: set NOTION_TOKEN (same integration as Civic Mandate is fine).",
+    };
+  }
+
+  const database_id = staffDatabaseId();
+  if (!database_id) {
+    return {
+      configured: false,
+      members: [],
+      hint: "Token is enough for later. Create a Staff Roster database and set NOTION_STAFF_DATABASE_ID — do not use the Civic Mandate database ID.",
+    };
+  }
+
+  if (MANDATE_DB_BLOCKLIST.has(database_id)) {
+    return {
+      configured: false,
+      members: [],
+      error:
+        "NOTION_STAFF_DATABASE_ID points at the Civic Mandate database. Use a separate Staff Roster database (Name, Role, Unit, Status).",
+    };
   }
 
   const notion = new Client({ auth: process.env.NOTION_TOKEN });
-  const database_id = process.env.NOTION_STAFF_DATABASE_ID!.replace(/-/g, "");
 
   try {
     const res = await notion.databases.query({
@@ -64,8 +88,9 @@ export async function listStaffMembers(): Promise<{
     const members: StaffMember[] = res.results
       .filter((r) => "properties" in r)
       .map((page) => {
-        const props = (page as { id: string; properties: Record<string, unknown> })
-          .properties;
+        const props = (
+          page as { id: string; properties: Record<string, unknown> }
+        ).properties;
         const name =
           plain(props.Name) ||
           plain(props.Title) ||
@@ -77,8 +102,7 @@ export async function listStaffMembers(): Promise<{
           plain(props.Department) ||
           plain(props.unit) ||
           "—";
-        const status =
-          plain(props.Status) || plain(props.status) || "Active";
+        const status = plain(props.Status) || plain(props.status) || "Active";
         return {
           id: (page as { id: string }).id,
           name,
@@ -91,6 +115,11 @@ export async function listStaffMembers(): Promise<{
     return { configured: true, members };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Notion query failed";
-    return { configured: true, members: [], error: msg };
+    return {
+      configured: true,
+      members: [],
+      error: msg,
+      hint: "Share the Staff Roster database with your Notion integration (⋯ → Connections).",
+    };
   }
 }
