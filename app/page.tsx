@@ -1,101 +1,39 @@
 import Link from "next/link";
-import {
-  CIVIC_BRAIN_URL,
-  CIVIC_MANDATE_URL,
-  MANDATE_BRIEF_KADUNA,
-  MANDATE_OPERATORS,
-} from "@/lib/links";
 
-const systems = [
-  {
-    title: "2027 Civic Mandate",
-    blurb:
-      "Citizens state what public office must deliver. Published records only. Not a poll.",
-    href: CIVIC_MANDATE_URL,
-    cta: "Open public product",
-  },
-  {
-    title: "Kaduna State Brief",
-    blurb: "This week’s published demands for Kaduna — shareable civic memory.",
-    href: MANDATE_BRIEF_KADUNA,
-    cta: "Open State Brief",
-  },
-  {
-    title: "Mandate operators",
-    blurb: "ISEYC review workspace for citizen mandates and blueprints.",
-    href: MANDATE_OPERATORS,
-    cta: "Open operators",
-  },
-  {
-    title: "Civic Brain",
-    blurb: "Institutional intelligence surface (separate product).",
-    href: CIVIC_BRAIN_URL,
-    cta: "Open Civic Brain",
-  },
-];
-
-export default function HomePage() {
+export default function GatePage() {
   return (
-    <div className="space-y-8">
-      <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-forest-700">
-          Institutional hub
+    <div className="grid min-h-screen place-items-center bg-[radial-gradient(circle_at_top_left,#ecfdf5,transparent_40%),#f8fafc] p-6">
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">
+          ISEYC
         </p>
-        <h2 className="mt-2 font-serif text-2xl text-slate-950 sm:text-3xl">
-          One door into ISEYC systems
-        </h2>
+        <h1 className="mt-3 font-serif text-3xl text-slate-950">
+          Digital Operations Centre
+        </h1>
         <p className="mt-3 text-sm leading-relaxed text-slate-600">
-          This Command Hub replaces the heavy Supabase Digital Operations Centre for day-to-day
-          staff navigation. Public civic work stays on Civic Mandate. Staff tools use a simple
-          key + optional Notion roster — no Postgres pooler, no Auth UUID bootstrap.
+          Institutional command surface for ISEYC — the DOC product shape you built, on Notion +
+          Vercel so it stays deployable from a phone. No Supabase Auth or Postgres pooler.
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-7 space-y-3">
           <Link
-            href="/staff"
-            className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-forest-800 px-5 text-sm font-semibold text-white hover:bg-forest-900"
+            href="/ops"
+            className="flex min-h-[52px] items-center justify-center rounded-xl bg-slate-950 text-sm font-semibold text-white hover:bg-slate-800"
           >
-            Staff workspace
+            Enter operations
           </Link>
           <a
-            href={CIVIC_MANDATE_URL}
+            href="https://2027-street-mandate.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-stone-300 bg-white px-5 text-sm font-semibold text-slate-800 hover:bg-stone-50"
+            className="flex min-h-[48px] items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 hover:bg-slate-50"
           >
-            Civic Mandate ↗
+            Public Civic Mandate ↗
           </a>
         </div>
-      </section>
-
-      <section className="space-y-3">
-        <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-500">
-          Connected systems
-        </h3>
-        <ul className="space-y-3">
-          {systems.map((s) => (
-            <li
-              key={s.title}
-              className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm"
-            >
-              <h4 className="font-serif text-lg text-slate-950">{s.title}</h4>
-              <p className="mt-1 text-sm text-slate-600">{s.blurb}</p>
-              <a
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex min-h-[44px] items-center text-sm font-semibold text-forest-800 underline-offset-2 hover:underline"
-              >
-                {s.cta} ↗
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <p className="text-xs leading-relaxed text-slate-500">
-        Non-partisan. No candidate rankings, polls, or endorsements. Staff pages are not public
-        campaign surfaces.
-      </p>
+        <p className="mt-6 text-xs text-slate-400">
+          Non-Partisan · Youth-Led · Systems-Focused
+        </p>
+      </div>
     </div>
   );
 }
