@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { HUB_MODULES } from "@/lib/modules";
+import { opsConfigStatus } from "@/lib/notion-ops";
+
+export const dynamic = "force-dynamic";
 
 export default function CommandBriefPage() {
   const internal = HUB_MODULES.filter((m) => !m.external);
   const civic = HUB_MODULES.filter((m) => m.group === "Civic systems");
+  const notion = opsConfigStatus();
 
   return (
     <div className="space-y-6">
@@ -15,10 +19,9 @@ export default function CommandBriefPage() {
           Attention for institutional leadership
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-          This is the Digital Operations Centre home — the product shape you built for ISEYC
-          leadership. Civic Mandate holds the public citizen record. This centre holds staff
-          navigation, operating modules, and review entry points on a stack that deploys from a
-          phone.
+          ISEYC Digital Operations Centre on Notion + Vercel. Public civic memory stays on Civic
+          Mandate. Internal modules load from Notion databases behind the staff key — not Supabase
+          Auth or Postgres.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <a
@@ -38,6 +41,41 @@ export default function CommandBriefPage() {
             Mandate operators ↗
           </a>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+          Notion connection status
+        </p>
+        <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+          {(
+            [
+              ["Integration token", notion.token],
+              ["Meetings DB", notion.meetings],
+              ["Chamber DB", notion.chamber],
+              ["Media DB", notion.media],
+              ["Staff roster DB", notion.staff],
+            ] as const
+          ).map(([label, ok]) => (
+            <li
+              key={label}
+              className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2"
+            >
+              <span className="text-slate-700">{label}</span>
+              <span
+                className={
+                  ok ? "font-semibold text-emerald-700" : "font-medium text-slate-400"
+                }
+              >
+                {ok ? "Connected" : "Not set"}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-xs text-slate-500">
+          Reuse the same NOTION_TOKEN as Civic Mandate. Each ops module needs its own database ID
+          — never the public Mandate database.
+        </p>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
